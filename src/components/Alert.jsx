@@ -34,14 +34,14 @@ function Alert({ type, title, message, close }) {
     <div className="absolute z-50 w-screen bottom-5 flex justify-center">
       <div
         className={
-          "grid border-2 p-2.5 w-96 rounted-2xl items-center gap-2" +
+          "grid border-2 p-2.5 w-96 rounded-2xl items-center gap-2 " +
           COLORS[type].main
         }
         style={{ gridTemplateColumns: "auto 1fr auto" }}
       >
         <div
           className={
-            "h-fit flex place-items-center p-1.5 rounted-full" + COLORS[type].bg
+            "h-fit flex place-items-center p-1.5 rounded-full " + COLORS[type].bg
           }
         >
           {ICONS[type]}

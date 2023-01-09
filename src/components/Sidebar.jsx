@@ -120,6 +120,7 @@ const Sidebar = ({ sidebar }) => {
               />
               <div className="flex gap-5 mt-2.5">
                 <button
+                  type="button"
                   onClick={() => {
                     setAdd(false);
                   }}

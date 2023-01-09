@@ -1,11 +1,12 @@
-import { useContext, useEffect, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { useContext, useEffect, useState } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
-import "./App.css";
-import Alert from "./components/Alert";
-import AuthContext, { AuthProvider } from "./context/AuthContext";
-import Project from "./pages/Project";
-import Projects from "./pages/Projects";
+import './App.css';
+import Alert from './components/Alert';
+import Home from './components/Home';
+import AuthContext, { AuthProvider } from './context/AuthContext';
+import Project from './pages/Project';
+import Projects from './pages/Projects';
 
 function PrivateRoute({ children, ..._ }) {
   const {
@@ -40,10 +41,10 @@ function PrivateRoute({ children, ..._ }) {
 
 function App() {
   useEffect(() => {
-    if (localStorage.theme === "dark") {
-      document.documentElement.classList.add("dark");
+    if (localStorage.theme === 'dark') {
+      document.documentElement.classList.add('dark');
     } else {
-      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 
@@ -70,7 +71,7 @@ function App() {
         />
         <Route path="/signin" element={<div>Sign In</div>} />
         <Route path="/signup" element={<div>Sign up</div>} />
-        <Route path="/" element={<div>Home</div>} />
+        <Route path="/" element={<Home />} />
         <Route path="*" element={<div>Not found</div>} />
       </Routes>
     </AuthProvider>

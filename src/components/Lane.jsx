@@ -16,7 +16,7 @@ const Lane = ({
     <div
       className="text-left p-0 rounded-sm min-h-96 min-w-500"
       onDragOver={onDragOver}
-      onDrop={onDrop}
+      onDrop={e => onDrop(e, laneId)}
     >
       <div className="flex justify-between w-full items-center bg-gray-200 mb-4 p-2.5 rounded-md dark:bg-gray-800">
         <h2 className="font-semibold dark:text-white">{title}</h2>

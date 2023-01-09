@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AuthContext from '../context/AuthContext';
 import Lane from './Lane';
 
@@ -10,11 +10,24 @@ const lanes = [
 ];
 
 const Board = ({ project }) => {
-  const [task, setTasks] = useState([]);
-  const { badge, setTitle, setMessage, setBadge, setType, tasks } =
+  const [tasks, setTasks] = useState([]);
+  const { badge, setTitle, setMessage, setBadge, setType, tasks:data, updateLane } =
     useContext(AuthContext);
 
-  const onDrop = (e, landeId) => {};
+  const onDrop = (e, laneId) => {
+    const id = e.dataTransfer.getData('id');
+    const updatedTasks = tasks.filter(task => {
+      if (String(task.id) === id) {
+        task.stage = laneId;
+        updateLane(task.id, { stage: laneId });
+      }
+
+      return task;
+    });
+
+    setTasks(updatedTasks);
+  };
+
   const onDragStart = (event, id) => {
     event.dataTransfer.setData('id', id);
   };
@@ -22,6 +35,10 @@ const Board = ({ project }) => {
   const onDragOver = e => {
     e.preventDefault();
   };
+
+  useEffect(() => {
+    setTasks(data);
+  }, [data, badge])
 
   return (
     <div className="grow flex flex-col w-full items-center bg-gray-100 p-5 pb-0 dark:bg-gray-700">
@@ -34,7 +51,11 @@ const Board = ({ project }) => {
             key={lane.id}
             title={lane.title}
             laneId={lane.id}
-            tasks={tasks.filter(task => +task.stage === lane.id)}
+            tasks={tasks.filter(
+              task =>
+                +task.stage === lane.id &&
+                task.project === project.id
+            )}
             project={project}
             onDrop={onDrop}
             onDragStart={onDragStart}

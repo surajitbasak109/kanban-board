@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }) => {
       setTitle('');
       setMessage('');
       setType('');
-    }, 5000);
+    }, 3000);
   }, [badge]);
 
   const addProject = newProject => {
@@ -140,7 +140,6 @@ export const AuthProvider = ({ children }) => {
       description,
       slug,
     };
-    console.log(index, existingProject);
     updatedProjects[index] = existingProject;
 
     setProjects(updatedProjects);
@@ -148,17 +147,17 @@ export const AuthProvider = ({ children }) => {
     return existingProject;
   };
 
-  const updateTask = (id, { title, description }) => {
+  const updateTask = (id, { title, body }) => {
     const updated = new Date().toISOString();
     const updatedTasks = tasks.slice();
-    const index = updatedTasks.findIndex(p => p.id === id);
-    const existingProject = {
-      ...tasks.find(p => p.id === id),
+    const index = updatedTasks.findIndex(task => task.id === id);
+    const existingTask = {
+      ...tasks.find(task => task.id === id),
       title,
-      description,
+      body,
       updated,
     };
-    updatedTasks[index] = existingProject;
+    updatedTasks[index] = existingTask;
     setTasks(updatedTasks);
   };
 
@@ -175,6 +174,17 @@ export const AuthProvider = ({ children }) => {
     const updatedTasks = tasks.slice();
     const index = updatedTasks.findIndex(task => task.id === taskId);
     updatedTasks.splice(index, 1);
+    setTasks(updatedTasks);
+  };
+
+  const updateLane = (taskId, { stage }) => {
+    const updatedTasks = tasks.slice();
+    const index = updatedTasks.findIndex(p => p.id === taskId);
+    const existingTask = {
+      ...tasks.find(p => p.id === taskId),
+      stage,
+    };
+    updatedTasks[index] = existingTask;
     setTasks(updatedTasks);
   };
 
@@ -205,6 +215,7 @@ export const AuthProvider = ({ children }) => {
     addTask,
     updateTask,
     removeTask,
+    updateLane,
   };
 
   return (

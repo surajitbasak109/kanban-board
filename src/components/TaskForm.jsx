@@ -1,4 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import AuthContext from '../context/AuthContext';
 import {
   MdCheck,
@@ -15,11 +20,19 @@ const TaskForm = ({
   taskId,
   project,
 }) => {
-  const { badge, setBadge, setTitle, setMessage, setType, addTask, updateTask } =
-    useContext(AuthContext);
+  const {
+    badge,
+    setBadge,
+    setTitle,
+    setMessage,
+    setType,
+    addTask,
+    updateTask,
+  } = useContext(AuthContext);
 
   const [title, setTaskTitle] = useState(editTitle ?? '');
   const [body, setBody] = useState(editBody ?? '');
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   const saveTask = event => {
     event.preventDefault();
@@ -29,7 +42,6 @@ const TaskForm = ({
       setType('danger');
       setTitle('Error');
       setMessage("Title musn't be empty!");
-      edit();
     } else if (body.trim() === '') {
       setBadge(true);
       setType('danger');
@@ -50,6 +62,7 @@ const TaskForm = ({
         setType('success');
         setTaskTitle('');
         setBody('');
+        edit();
       } else {
         // Add task
         addTask({ ...data, project: project.id, stage: laneId });
@@ -61,12 +74,43 @@ const TaskForm = ({
         setType('success');
         setTaskTitle('');
         setBody('');
+        close(false);
       }
     }
   };
 
+  const ref = useRef(null);
+
+  const openFullscreen = () => {
+    const elem = ref.current;
+    if (elem.requestFullscreen) {
+      !isFullScreen
+        ? elem.requestFullscreen()
+        : document.exitFullscreen();
+
+      setIsFullScreen(!isFullScreen);
+    } else if (elem.webkitRequestFullscreen) {
+      /* Safari */
+      !isFullScreen
+        ? elem.webkitRequestFullscreen()
+        : document.webkitExitFullscreen();
+
+      setIsFullScreen(!isFullScreen);
+    } else if (elem.msRequestFullscreen) {
+      /* IE11 */
+      !isFullScreen
+        ? elem.msRequestFullscreen()
+        : document.msExitFullscreen();
+
+      setIsFullScreen(!isFullScreen);
+    }
+  };
+
   return (
-    <div className="bg-white p-4 rounded-md dark:bg-gray-800">
+    <div
+      ref={ref}
+      className="bg-white p-4 rounded-md dark:bg-gray-800"
+    >
       <div className="flex justify-between items-center mb-3">
         <div>
           <label htmlFor="taskTitle" className="sr-only">
@@ -82,7 +126,10 @@ const TaskForm = ({
           />
         </div>
         <div className="flex gap-2 5 items-center">
-          <MdOutlineOpenInFull className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200" />
+          <MdOutlineOpenInFull
+            onClick={openFullscreen}
+            className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+          />
           <MdClose
             onClick={() => {
               if (close) close(false);
