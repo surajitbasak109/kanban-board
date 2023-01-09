@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Board from "../components/Board";
 
@@ -26,7 +26,7 @@ const Project = () => {
     setLoading(false);
   };
 
-  useState(() => {
+  useEffect(() => {
     loadProject(slug);
   }, [slug]);
 

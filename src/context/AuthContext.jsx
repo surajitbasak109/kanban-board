@@ -1,5 +1,7 @@
-import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { nanoid } from 'nanoid';
+import { createContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { slugify } from '../support/Text';
 
 const AuthContext = createContext();
 
@@ -9,59 +11,62 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     // use expensive computation
     return {
-      token_type: "refresh",
+      token_type: 'refresh',
       exp: 1675724877,
       iat: 1673132877,
-      jti: "9494ab89dab74a6f9c42366cf16d1bf9",
+      jti: '9494ab89dab74a6f9c42366cf16d1bf9',
       user_id: 132,
-      username: "user",
+      username: 'user',
     };
   });
 
   const [token, setToken] = useState(() => {
     // use expensive computation
     return {
-      refresh: "",
-      access: "",
+      refresh: '',
+      access: '',
     };
   });
 
   const [loading, setLoading] = useState(true);
   const [remember, setRemember] = useState(true);
   const [badge, setBadge] = useState(false);
-  const [type, setType] = useState("");
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
+  const [type, setType] = useState('');
+  const [title, setTitle] = useState('');
+  const [message, setMessage] = useState('');
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
 
   const navigate = useNavigate();
 
-  const loginUser = (event) => {
+  const loginUser = event => {
     const response = {
-      token_type: "refresh",
+      token_type: 'refresh',
       exp: 1675724877,
       iat: 1673132877,
-      jti: "9494ab89dab74a6f9c42366cf16d1bf9",
+      jti: '9494ab89dab74a6f9c42366cf16d1bf9',
       user_id: 1,
-      username: "user",
+      username: 'user',
     };
     setRemember(event.target.remember.checked);
     setToken({
-      refresh: "",
-      access: "",
+      refresh: '',
+      access: '',
     });
     setUser(response);
     event.target.remember.checked
-      ? localStorage.setItem("authTokens", JSON.stringify(response))
-      : sessionStorage.setItem("authTokens", JSON.stringify(response));
-    navigate("/projects");
+      ? localStorage.setItem('authTokens', JSON.stringify(response))
+      : sessionStorage.setItem(
+          'authTokens',
+          JSON.stringify(response)
+        );
+    navigate('/projects');
   };
 
-  const updateToken = (event) => {
+  const updateToken = event => {
     const response = {
-      refresh: "",
-      access: "",
+      refresh: '',
+      access: '',
     };
     if (loading) setLoading(false);
     else if (token) {
@@ -74,9 +79,9 @@ export const AuthProvider = ({ children }) => {
   const logoutUser = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem("authTokens");
-    sessionStorage.removeItem("authTokens");
-    navigate("/signin");
+    localStorage.removeItem('authTokens');
+    sessionStorage.removeItem('authTokens');
+    navigate('/signin');
   };
 
   useEffect(() => {
@@ -93,29 +98,84 @@ export const AuthProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [loading, token]);
 
-  const addProject = (newProject) => {
+  useEffect(() => {
+    setTimeout(() => {
+      setBadge(false);
+      setTitle('');
+      setMessage('');
+      setType('');
+    }, 5000);
+  }, [badge]);
+
+  const addProject = newProject => {
+    newProject = {
+      ...newProject,
+      slug: slugify(newProject.name),
+      created: new Date().toISOString(),
+      id: nanoid(),
+    };
     const newProjects = projects.concat(newProject);
     setProjects(newProjects);
+    return newProject;
   };
 
-  const updateProject = (id, { name, description, slug }) => {
+  const addTask = newTask => {
+    const isoDate = new Date().toISOString();
+    const newTasks = tasks.concat({
+      ...newTask,
+      created: isoDate,
+      updated: isoDate,
+      id: nanoid(),
+    });
+    setTasks(newTasks);
+  };
+
+  const updateProject = (id, { name, description }) => {
+    const slug = slugify(name);
     const updatedProjects = projects.slice();
-    const index = updatedProjects.findIndex((p) => p.id === id);
-    const existingProject = projects.find((p) => p.id === id);
-    existingProject.name = name;
-    existingProject.description = description;
-    existingProject.slug = slug;
+    const index = updatedProjects.findIndex(p => p.id === id);
+    const existingProject = {
+      ...projects.find(p => p.id === id),
+      name,
+      description,
+      slug,
+    };
+    console.log(index, existingProject);
     updatedProjects[index] = existingProject;
+
     setProjects(updatedProjects);
+
+    return existingProject;
   };
 
-  const removeProject = (projectId) => {
+  const updateTask = (id, { title, description }) => {
+    const updated = new Date().toISOString();
+    const updatedTasks = tasks.slice();
+    const index = updatedTasks.findIndex(p => p.id === id);
+    const existingProject = {
+      ...tasks.find(p => p.id === id),
+      title,
+      description,
+      updated,
+    };
+    updatedTasks[index] = existingProject;
+    setTasks(updatedTasks);
+  };
+
+  const removeProject = projectId => {
     const updatedProjects = projects.slice();
     const index = updatedProjects.findIndex(
-      (project) => project.id === projectId
+      project => project.id === projectId
     );
     updatedProjects.splice(index, 1);
     setProjects(updatedProjects);
+  };
+
+  const removeTask = taskId => {
+    const updatedTasks = tasks.slice();
+    const index = updatedTasks.findIndex(task => task.id === taskId);
+    updatedTasks.splice(index, 1);
+    setTasks(updatedTasks);
   };
 
   const contextData = {
@@ -142,9 +202,14 @@ export const AuthProvider = ({ children }) => {
     addProject,
     removeProject,
     updateProject,
+    addTask,
+    updateTask,
+    removeTask,
   };
 
   return (
-    <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextData}>
+      {children}
+    </AuthContext.Provider>
   );
 };

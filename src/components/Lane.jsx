@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import Task from './Task';
+import TaskForm from './TaskForm';
 
 const Lane = ({
   laneId,
@@ -23,8 +25,15 @@ const Lane = ({
         </p>
       </div>
       <div className="flex flex-col gap-4 min-w-400">
+        {tasks.map(task => (
+          <Task key={task.id} onDragStart={onDragStart} {...task} />
+        ))}
         {open ? (
-          <div>Open a task form</div>
+          <TaskForm
+            close={setOpen}
+            laneId={laneId}
+            project={project}
+          />
         ) : (
           <button
             onClick={() => setOpen(true)}

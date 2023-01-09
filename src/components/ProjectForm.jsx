@@ -3,7 +3,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import AuthContext from "../context/AuthContext";
-import { slugify } from "../support/Text";
 
 function ProjectForm({ close, id, projectName = "", projectDescription = "" }) {
   const [name, setName] = useState(projectName);
@@ -28,16 +27,13 @@ function ProjectForm({ close, id, projectName = "", projectDescription = "" }) {
       setTitle("Error");
       setMessage("Description musn't be empty!");
     } else {
-      const slug = slugify(name);
       const data = {
         name,
         description,
-        slug,
       };
       if (id) {
         // update project in the projects list
-        updateProject(id, data);
-        const updatedSlug = slug;
+        const { slug: updatedSlug } = updateProject(id, data);
         // show alert message
         setBadge(true);
         setTitle("Successful operation");
@@ -49,11 +45,7 @@ function ProjectForm({ close, id, projectName = "", projectDescription = "" }) {
         navigate(`/project/${updatedSlug}`);
       } else {
         // add a new project
-        data["created"] = new Date().toISOString();
-        data["id"] = nanoid();
-
-        addProject(data);
-        const newSlug = slug;
+        const {slug: newSlug} = addProject(data);
         // show alert message
         setBadge(true);
         setTitle("Successful operation");

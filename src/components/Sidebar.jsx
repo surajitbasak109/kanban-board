@@ -56,15 +56,6 @@ const Sidebar = ({ sidebar }) => {
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      setBadge(false);
-      setTitle("");
-      setMessage("");
-      setType("");
-    }, 5000);
-  }, [badge]);
-
   return (
     <>
       <div

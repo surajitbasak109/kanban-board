@@ -21,15 +21,6 @@ function PrivateRoute({ children, ..._ }) {
     setType,
   } = useContext(AuthContext);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setBadge(false);
-      setTitle("");
-      setMessage("");
-      setType("");
-    }, 2500);
-  }, [badge]);
-
   return (
     <>
       {badge && (
