@@ -11,8 +11,15 @@ const lanes = [
 
 const Board = ({ project }) => {
   const [tasks, setTasks] = useState([]);
-  const { badge, setTitle, setMessage, setBadge, setType, tasks:data, updateLane } =
-    useContext(AuthContext);
+  const {
+    badge,
+    setTitle,
+    setMessage,
+    setBadge,
+    setType,
+    tasks: data,
+    updateLane,
+  } = useContext(AuthContext);
 
   const onDrop = (e, laneId) => {
     const id = e.dataTransfer.getData('id');
@@ -20,6 +27,10 @@ const Board = ({ project }) => {
       if (String(task.id) === id) {
         task.stage = laneId;
         updateLane(task.id, { stage: laneId });
+        setBadge(true);
+        setType('success');
+        setTitle('Operation successfull');
+        setMessage("Your changes has been updated!");
       }
 
       return task;
@@ -38,7 +49,7 @@ const Board = ({ project }) => {
 
   useEffect(() => {
     setTasks(data);
-  }, [data, badge])
+  }, [data, badge]);
 
   return (
     <div className="grow flex flex-col w-full items-center bg-gray-100 p-5 pb-0 dark:bg-gray-700">

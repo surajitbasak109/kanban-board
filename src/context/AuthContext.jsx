@@ -1,6 +1,11 @@
 import { nanoid } from 'nanoid';
 import { createContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  getProjectsFromLocalStorage,
+  getTasksFromLocalStorage,
+  saveProjectToLocalStorage,
+  saveTasksToLocalStorage,
+} from '../support/LocalStorage';
 import { slugify } from '../support/Text';
 
 const AuthContext = createContext();
@@ -11,92 +16,19 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     // use expensive computation
     return {
-      token_type: 'refresh',
-      exp: 1675724877,
-      iat: 1673132877,
-      jti: '9494ab89dab74a6f9c42366cf16d1bf9',
-      user_id: 132,
       username: 'user',
-    };
-  });
-
-  const [token, setToken] = useState(() => {
-    // use expensive computation
-    return {
-      refresh: '',
-      access: '',
     };
   });
 
   const [loading, setLoading] = useState(true);
-  const [remember, setRemember] = useState(true);
   const [badge, setBadge] = useState(false);
   const [type, setType] = useState('');
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
-  const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState([]);
-
-  const navigate = useNavigate();
-
-  const loginUser = event => {
-    const response = {
-      token_type: 'refresh',
-      exp: 1675724877,
-      iat: 1673132877,
-      jti: '9494ab89dab74a6f9c42366cf16d1bf9',
-      user_id: 1,
-      username: 'user',
-    };
-    setRemember(event.target.remember.checked);
-    setToken({
-      refresh: '',
-      access: '',
-    });
-    setUser(response);
-    event.target.remember.checked
-      ? localStorage.setItem('authTokens', JSON.stringify(response))
-      : sessionStorage.setItem(
-          'authTokens',
-          JSON.stringify(response)
-        );
-    navigate('/projects');
-  };
-
-  const updateToken = event => {
-    const response = {
-      refresh: '',
-      access: '',
-    };
-    if (loading) setLoading(false);
-    else if (token) {
-      setToken(response);
-    } else {
-      logoutUser();
-    }
-  };
-
-  const logoutUser = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('authTokens');
-    sessionStorage.removeItem('authTokens');
-    navigate('/signin');
-  };
-
-  useEffect(() => {
-    if (loading) {
-      updateToken();
-    }
-
-    let interval = setInterval(() => {
-      if (token) {
-        updateToken(token);
-      }
-    }, 1000 * 60 * 59 * 4);
-
-    return () => clearInterval(interval);
-  }, [loading, token]);
+  const [projects, setProjects] = useState(
+    getProjectsFromLocalStorage()
+  );
+  const [tasks, setTasks] = useState(getTasksFromLocalStorage());
 
   useEffect(() => {
     setTimeout(() => {
@@ -106,6 +38,28 @@ export const AuthProvider = ({ children }) => {
       setType('');
     }, 3000);
   }, [badge]);
+
+  useEffect(() => {
+    const savedProjects = getProjectsFromLocalStorage();
+
+    if (savedProjects && savedProjects.length) {
+      setProjects(savedProjects);
+    }
+
+    const savedTasks = getTasksFromLocalStorage();
+
+    if (savedTasks && savedTasks.length) {
+      setTasks(savedTasks);
+    }
+  }, []);
+
+  useEffect(() => {
+    saveProjectToLocalStorage(projects);
+  }, [projects]);
+
+  useEffect(() => {
+    saveTasksToLocalStorage(tasks);
+  }, [tasks]);
 
   const addProject = newProject => {
     newProject = {
@@ -189,10 +143,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const contextData = {
-    loginUser,
-    logoutUser,
-    token,
-    setToken,
     user,
     setUser,
     badge,
@@ -208,7 +158,6 @@ export const AuthProvider = ({ children }) => {
     tasks,
     setTasks,
     loading,
-    remember: setRemember,
     addProject,
     removeProject,
     updateProject,

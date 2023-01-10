@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 

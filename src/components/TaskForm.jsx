@@ -1,6 +1,5 @@
 import React, {
   useContext,
-  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -21,7 +20,6 @@ const TaskForm = ({
   project,
 }) => {
   const {
-    badge,
     setBadge,
     setTitle,
     setMessage,
@@ -125,11 +123,12 @@ const TaskForm = ({
             onChange={event => setTaskTitle(event.target.value)}
           />
         </div>
-        <div className="flex gap-2 5 items-center">
-          <MdOutlineOpenInFull
+
+        <div className="flex gap-2.5 items-center">
+          {/* <MdOutlineOpenInFull
             onClick={openFullscreen}
             className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
-          />
+          /> */}
           <MdClose
             onClick={() => {
               if (close) close(false);

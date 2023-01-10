@@ -1,11 +1,8 @@
-import React, { useContext } from "react";
-import { MdLogout, MdOutlineDarkMode, MdViewStream } from "react-icons/md";
+import React from "react";
+import { MdOutlineDarkMode, MdViewStream } from "react-icons/md";
 import { Link } from "react-router-dom";
-import AuthContext from "../context/AuthContext";
 
 const Navbar = ({ sidebar }) => {
-  const { logoutuser } = useContext(AuthContext);
-
   const dark = () => {
     if (localStorage.theme === "light") {
       document.documentElement.classList.add("dark");
@@ -33,14 +30,6 @@ const Navbar = ({ sidebar }) => {
           onClick={dark}
           className="text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-white cursor-pointer"
         />
-
-        <span className="mx-2.5">|</span>
-        <button
-          onClick={logoutuser}
-          className="flex items-center gap-1.5 hover:text-gray-800 dark:hover:text-white"
-        >
-          <MdLogout />
-        </button>
       </div>
     </nav>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
-import Footer from './Footer';
-import HomeNav from './HomeNav';
+import Footer from '../components/Footer';
+import HomeNav from '../components/HomeNav';
 import appImage from '../static/app.png';
 
 const Home = () => {

@@ -1,5 +1,4 @@
-import { nanoid } from "nanoid";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import { slugify } from "../support/Text";
@@ -38,10 +37,7 @@ const Sidebar = ({ sidebar }) => {
       // add a new project
       const data = {
         name,
-        description,
-        slug,
-        created: new Date().toISOString(),
-        id: nanoid(),
+        description
       };
 
       addProject(data);

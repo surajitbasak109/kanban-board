@@ -21,17 +21,21 @@ const ProjectHeader = ({ data, open }) => {
     setMessage('Project deleted successfully');
     setType('success');
     navigate('/projects');
+    setDeleteDialogOpen(false);
   };
 
   return (
     <>
-      <ConfirmDialog
-        headerText="Delete Project"
-        bodyText="Are you sure you want to delete this project?"
-        open={deleteDialogOpen}
-        confirmText="Sure!"
-        onConfirm={deleteProject}
-      />
+      {deleteDialogOpen && (
+        <ConfirmDialog
+          headerText="Delete Project"
+          bodyText="Are you sure you want to delete this project?"
+          confirmText="Sure!"
+          onConfirm={deleteProject}
+          onCancel={() => setDeleteDialogOpen(false)}
+        />
+      )}
+
       <div className="bg-white grid py-10 px-10 w-full max-w-8xl items-start grid-cols-1 lg:grid-cols-2 dark:bg-gray-900">
         <div className="row">
           <p className="font-light text-sm dark:text-white">
